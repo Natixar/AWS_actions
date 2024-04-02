@@ -107,4 +107,8 @@ runs:
           echo "AWS_SECRET_ACCESS_KEY=$(jq -r '.SecretAccessKey' aws_credentials.json)" >> "$GITHUB_OUTPUT"
           echo "AWS_SESSION_TOKEN=$(jq -r '.SessionToken' aws_credentials.json)" >> "$GITHUB_OUTPUT"
         shell: bash
+        
+      - name: Clean up
+        run: |
+          rm -f cert.pem key.pem aws_signing_helper aws_credentials.json
 
