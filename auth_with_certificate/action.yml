@@ -72,7 +72,7 @@ outputs:
     value: ${{ steps.aws_auth.outputs.AWS_ACCESS_KEY_ID }}
   secret_access_key:
     description: 'AWS Secret Access Key'
-    value: ${{ steps.aws_auth.outputs.AWS_SECRET_ACCESS_KEY }
+    value: ${{ steps.aws_auth.outputs.AWS_SECRET_ACCESS_KEY }}
   session_token:
     description: 'AWS Session Token'
     value: ${{ steps.aws_auth.outputs.AWS_SESSION_TOKEN }}
