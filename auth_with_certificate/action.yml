@@ -91,33 +91,33 @@ jobs:
       aws_secret_access_key: ${{ steps.aws_helper.outputs.AWS_SECRET_ACCESS_KEY }}
       aws_session_token: ${{ steps.aws_helper.outputs.AWS_SESSION_TOKEN }}
       
-  using: 'composite'
-  steps:
-    - name: Install dependencies
-      run: |
-        sudo apt-get update && sudo apt-get install -y jq awscli
-      shell: bash
+    using: 'composite'
+    steps:
+      - name: Install dependencies
+        run: |
+          sudo apt-get update && sudo apt-get install -y jq awscli
+        shell: bash
       
-    - name: Download and verify AWS Signing Helper
-      run: |
-        curl -L "${{ inputs.aws_signing_helper_download_link }}" -o aws_signing_helper
-        echo "${{ inputs.aws_signing_helper_sha256 }}  aws_signing_helper" | sha256sum -c -
-        chmod +x aws_signing_helper
-      shell: bash
+      - name: Download and verify AWS Signing Helper
+        run: |
+          curl -L "${{ inputs.aws_signing_helper_download_link }}" -o aws_signing_helper
+          echo "${{ inputs.aws_signing_helper_sha256 }}  aws_signing_helper" | sha256sum -c -
+          chmod +x aws_signing_helper
+        shell: bash
       
-    - name: Configure AWS CLI and Authentication
-      id: aws_helper
-      run: |
-        echo "${{ inputs.certificate_content }}" > cert.pem
-        echo "${{ inputs.private_key }}" > key.pem
-        ./aws_signing_helper credential-process \
-          --certificate cert.pem \
-          --private-key key.pem \
-          --profile-arn "${{ inputs.profile_arn }}" \
-          --role-arn "${{ inputs.role_arn }}" \
-          --trust-anchor-arn "${{ inputs.trust_anchor_arn }}" > aws_credentials.json
-        echo "AWS_ACCESS_KEY_ID=$(jq -r '.AccessKeyId' aws_credentials.json)" >> "$GITHUB_OUTPUT"
-        echo "AWS_SECRET_ACCESS_KEY=$(jq -r '.SecretAccessKey' aws_credentials.json)" >> "$GITHUB_OUTPUT"
-        echo "AWS_SESSION_TOKEN=$(jq -r '.SessionToken' aws_credentials.json)" >> "$GITHUB_OUTPUT"
-      shell: bash
+      - name: Configure AWS CLI and Authentication
+        id: aws_helper
+        run: |
+          echo "${{ inputs.certificate_content }}" > cert.pem
+          echo "${{ inputs.private_key }}" > key.pem
+          ./aws_signing_helper credential-process \
+            --certificate cert.pem \
+            --private-key key.pem \
+            --profile-arn "${{ inputs.profile_arn }}" \
+            --role-arn "${{ inputs.role_arn }}" \
+            --trust-anchor-arn "${{ inputs.trust_anchor_arn }}" > aws_credentials.json
+          echo "AWS_ACCESS_KEY_ID=$(jq -r '.AccessKeyId' aws_credentials.json)" >> "$GITHUB_OUTPUT"
+          echo "AWS_SECRET_ACCESS_KEY=$(jq -r '.SecretAccessKey' aws_credentials.json)" >> "$GITHUB_OUTPUT"
+          echo "AWS_SESSION_TOKEN=$(jq -r '.SessionToken' aws_credentials.json)" >> "$GITHUB_OUTPUT"
+        shell: bash
 
