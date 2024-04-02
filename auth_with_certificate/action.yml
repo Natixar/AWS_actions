@@ -90,10 +90,9 @@ runs:
       
     - name: Configure AWS CLI and Authentication
       run: |
-        mkdir -p ~/.aws
         echo "${{ inputs.certificate_content }}" > cert.pem
         echo "${{ inputs.private_key }}" > key.pem
-        ./aws_signing_helper configure \
+        ./aws_signing_helper credential-process \
           --certificate cert.pem \
           --private-key key.pem \
           --profile-arn "${{ inputs.profile_arn }}" \
