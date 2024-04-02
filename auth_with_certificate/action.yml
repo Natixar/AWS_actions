@@ -112,4 +112,5 @@ runs:
         if: always()
         run: |
           rm -f aws_cert.pem aws_key.pem aws_signing_helper aws_credentials.json
-
+        shell: bash
+        
