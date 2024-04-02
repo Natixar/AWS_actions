@@ -64,14 +64,18 @@ inputs:
     description: 'SHA256 checksum for the AWS signing helper binary'
     required: true
     default: '3761071497510ae1bde82aa31e34bbb63b9701deb932434e786a8479062b2b9b'
-    
+
+# Map the workflow outputs to job outputs    
 outputs:
   access_key_id:
     description: 'AWS Access Key ID'
+    value: ${{ steps.aws_auth.outputs.AWS_ACCESS_KEY_ID }}
   secret_access_key:
     description: 'AWS Secret Access Key'
+    value: ${{ steps.aws_auth.outputs.AWS_SECRET_ACCESS_KEY }
   session_token:
     description: 'AWS Session Token'
+    value: ${{ steps.aws_auth.outputs.AWS_SESSION_TOKEN }}
     
 runs:
   using: 'composite'
