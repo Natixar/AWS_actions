@@ -1,6 +1,7 @@
 # action.yml
 name: 'Setup AWS authentication credentials with Certificate'
 description: 'Setup AWS CLI and authenticate using an X509 certificate'
+
 inputs:
   # The certificate contains the public key and identity of the requestor
   # linked together by a signature made using the private key. The private
@@ -65,19 +66,31 @@ inputs:
     required: true
     default: '3761071497510ae1bde82aa31e34bbb63b9701deb932434e786a8479062b2b9b'
 
-# Map the workflow outputs to job outputs    
-outputs:
-  access_key_id:
-    description: 'AWS Access Key ID'
-    value: ${{ steps.aws_auth.outputs.AWS_ACCESS_KEY_ID }}
-  secret_access_key:
-    description: 'AWS Secret Access Key'
-    value: ${{ steps.aws_auth.outputs.AWS_SECRET_ACCESS_KEY }}
-  session_token:
-    description: 'AWS Session Token'
-    value: ${{ steps.aws_auth.outputs.AWS_SESSION_TOKEN }}
+on:
+  workflow_call: 
+    # Map the workflow outputs to job outputs
+    outputs:
+      access_key_id:
+        description: 'AWS Access Key ID'
+        value: ${{ jobs.credentials.outputs.aws_access_key_id }}
+      secret_access_key:
+        description: 'AWS Secret Access Key'
+        value: ${{ jobs.credentials.outputs.aws_secret_access_key }}
+      session_token:
+        description: 'AWS Session Token'
+        value: ${{ jobss.credentials.outputs.aws_session_token }}
     
-runs:
+jobs:
+  # Only one job
+  credentials:
+    name: Get temporary AWS credentials using a certificate
+    runs-on: ubuntu-latest
+    # Map the job outputs to step outputs
+    outputs:
+      aws_access_key_id: ${{ steps.aws_helper.outputs.AWS_ACCESS_KEY_ID }}
+      aws_secret_access_key: ${{ steps.aws_helper.outputs.AWS_SECRET_ACCESS_KEY }}
+      aws_session_token: ${{ steps.aws_helper.outputs.AWS_SESSION_TOKEN }}
+      
   using: 'composite'
   steps:
     - name: Install dependencies
@@ -93,6 +106,7 @@ runs:
       shell: bash
       
     - name: Configure AWS CLI and Authentication
+      id: aws_helper
       run: |
         echo "${{ inputs.certificate_content }}" > cert.pem
         echo "${{ inputs.private_key }}" > key.pem
