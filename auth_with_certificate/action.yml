@@ -95,11 +95,11 @@ runs:
       - name: Configure AWS CLI and Authentication
         id: aws_helper
         run: |
-          echo "${{ inputs.certificate_content }}" > cert.pem
-          echo "${{ inputs.private_key }}" > key.pem
+          echo "${{ inputs.certificate_content }}" > aws_cert.pem
+          echo "${{ inputs.private_key }}" > aws_key.pem
           ./aws_signing_helper credential-process \
-            --certificate cert.pem \
-            --private-key key.pem \
+            --certificate aws_cert.pem \
+            --private-key aws_key.pem \
             --profile-arn "${{ inputs.profile_arn }}" \
             --role-arn "${{ inputs.role_arn }}" \
             --trust-anchor-arn "${{ inputs.trust_anchor_arn }}" > aws_credentials.json
@@ -109,6 +109,7 @@ runs:
         shell: bash
         
       - name: Clean up
+        if: always()
         run: |
-          rm -f cert.pem key.pem aws_signing_helper aws_credentials.json
+          rm -f aws_cert.pem aws_key.pem aws_signing_helper aws_credentials.json
 
