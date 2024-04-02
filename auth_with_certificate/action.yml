@@ -66,33 +66,20 @@ inputs:
     required: true
     default: '3761071497510ae1bde82aa31e34bbb63b9701deb932434e786a8479062b2b9b'
 
-on:
-  workflow_call: 
-    # Map the workflow outputs to job outputs
-    outputs:
+outputs:
       access_key_id:
         description: 'AWS Access Key ID'
-        value: ${{ jobs.credentials.outputs.aws_access_key_id }}
+        value: ${{ steps.aws_helper.outputs.aws_access_key_id }}
       secret_access_key:
         description: 'AWS Secret Access Key'
-        value: ${{ jobs.credentials.outputs.aws_secret_access_key }}
+        value: ${{ steps.aws_helper.outputs.aws_secret_access_key }}
       session_token:
         description: 'AWS Session Token'
-        value: ${{ jobss.credentials.outputs.aws_session_token }}
+        value: ${{ steps.aws_helper.outputs.aws_session_token }}
     
-jobs:
-  # Only one job
-  credentials:
-    name: Get temporary AWS credentials using a certificate
-    runs-on: ubuntu-latest
-    # Map the job outputs to step outputs
-    outputs:
-      aws_access_key_id: ${{ steps.aws_helper.outputs.AWS_ACCESS_KEY_ID }}
-      aws_secret_access_key: ${{ steps.aws_helper.outputs.AWS_SECRET_ACCESS_KEY }}
-      aws_session_token: ${{ steps.aws_helper.outputs.AWS_SESSION_TOKEN }}
-      
-    using: 'composite'
-    steps:
+runs:
+   using: 'composite'
+   steps:
       - name: Install dependencies
         run: |
           sudo apt-get update && sudo apt-get install -y jq awscli
