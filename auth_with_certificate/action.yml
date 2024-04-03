@@ -103,8 +103,12 @@ runs:
             --profile-arn "${{ inputs.profile_arn }}" \
             --role-arn "${{ inputs.role_arn }}" \
             --trust-anchor-arn "${{ inputs.trust_anchor_arn }}" > aws_credentials.json
+          secret="$(jq -r '.SecretAccessKey' aws_credentials.json)"
+          echo "::add-mask::${{ steps.aws_helper.outputs.aws_access_key_id }}"
+          echo "::add-mask::$secret"
+          echo "::add-mask::${{ steps.aws_helper.outputs.aws_session_token }}"
           echo "AWS_ACCESS_KEY_ID=$(jq -r '.AccessKeyId' aws_credentials.json)" >> "$GITHUB_OUTPUT"
-          echo "AWS_SECRET_ACCESS_KEY=$(jq -r '.SecretAccessKey' aws_credentials.json)" >> "$GITHUB_OUTPUT"
+          echo "AWS_SECRET_ACCESS_KEY=$secret" >> "$GITHUB_OUTPUT"
           echo "AWS_SESSION_TOKEN=$(jq -r '.SessionToken' aws_credentials.json)" >> "$GITHUB_OUTPUT"
         shell: bash
         
@@ -112,8 +116,5 @@ runs:
         if: always()
         run: |
           rm -f aws_cert.pem aws_key.pem aws_signing_helper aws_credentials.json
-          echo "::add-mask::${{ steps.aws_helper.outputs.aws_access_key_id }}"
-          echo "::add-mask::${{ steps.aws_helper.outputs.aws_secret_access_key }}"
-          echo "::add-mask::${{ steps.aws_helper.outputs.aws_session_token }}"
         shell: bash
         
