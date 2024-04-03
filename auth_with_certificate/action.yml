@@ -108,9 +108,12 @@ runs:
           echo "AWS_SESSION_TOKEN=$(jq -r '.SessionToken' aws_credentials.json)" >> "$GITHUB_OUTPUT"
         shell: bash
         
-      - name: Clean up
+      - name: Clean up and tell GitHub to mask the secrets
         if: always()
         run: |
           rm -f aws_cert.pem aws_key.pem aws_signing_helper aws_credentials.json
+          echo "::add-mask::${{ steps.aws_helper.outputs.aws_access_key_id }}"
+          echo "::add-mask::${{ steps.aws_helper.outputs.aws_secret_access_key }}"
+          echo "::add-mask::${{ steps.aws_helper.outputs.aws_session_token }}"
         shell: bash
         
