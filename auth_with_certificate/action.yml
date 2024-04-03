@@ -82,7 +82,11 @@ runs:
    steps:
       - name: Install dependencies
         run: |
-          sudo apt-get update && sudo apt-get install -y jq awscli
+          if ! command -v aws &> /dev/null; then
+            sudo apt-get update && sudo apt-get install -y awscli jq
+          elif ! command -v jq &> /dev/null; then
+            sudo apt-get update && sudo apt-get install -y jq
+          fi
         shell: bash
       
       - name: Download and verify AWS Signing Helper
